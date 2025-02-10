@@ -1,0 +1,37 @@
+version: "3.11"
+
+services:
+  django:
+    build: .
+    container_name: django_app
+    restart: always
+    depends_on:
+      - db
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    command: >
+      sh -c "python manage.py makemigrations &&
+      python manage.py migrate &&
+      echo \"from django.contrib.auth import get_user_model; User = get_user_model(); User.objects.filter(username='admin').exists() or User.objects.create_superuser('admin', 'admin@example.com', '1234')\" | python manage.py shell &&
+      uvicorn referral_system.asgi:application --host 0.0.0.0 --port 8000 --reload"
+
+  db:
+    image: postgres:15
+    container_name: postgres_db
+    restart: always
+    environment:
+      POSTGRES_DB: ${NAME_DB}
+      POSTGRES_USER: ${USER_NAME_DB}
+      POSTGRES_PASSWORD: ${PASSWORD_DB}
+    ports:
+      - "${PORT_DB}:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+      - ./db_dump.sql:/docker-entrypoint-initdb.d/dump.sql
+
+volumes:
+  pg_data:
