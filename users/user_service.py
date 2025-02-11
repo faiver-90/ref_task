@@ -1,41 +1,42 @@
 from django.forms import model_to_dict
 from django.http import JsonResponse
-from django.shortcuts import get_object_or_404
 
-from users.models import User
+from users.repository import UserRepo
 
 
 class UserService:
     @staticmethod
     async def create_user(user_name, password, role, email):
-        user = await User.objects.filter(user_name=user_name).afirst()
+        user = await UserRepo.get_user_by_filters(user_name=user_name)
         if user:
             raise ValueError("User already exist")
-        await User.objects.acreate(user_name=user_name, password=password, role=role, email=email)
-
+        await UserRepo.create_user(user_name=user_name, password=password, role=role, email=email)
         return {'detail': "User created"}
 
     @staticmethod
     async def update_user_by_user_name(user_name, data):
-        user = await User.objects.filter(user_name=user_name).afirst()
+        user = await UserRepo.get_user_by_filters(user_name=user_name)
+
         if not user:
-            return JsonResponse({"detail": "User not found"}, status=404)
+            return {"detail": "User not found"}
 
         for field, value in data.dict(exclude_unset=True).items():
             setattr(user, field, value)
-        await user.asave()  # Асинхронное сохранение
+        await user.asave()
         return {'detail': "User updated"}
 
     @staticmethod
     async def get_user_by_user_name(user_name: str):
-        user = await User.objects.filter(user_name=user_name).afirst()
+        user = await UserRepo.get_user_by_filters(user_name=user_name)
+
         if not user:
             return {"detail": "User not found"}, 404
         return model_to_dict(user)
 
     @staticmethod
     async def delete_user(user_id, user_id_req):
-        user = await User.objects.filter(id=user_id).afirst()
+        user = await UserRepo.get_user_by_filters(id=user_id)
+
         if not user:
             return JsonResponse({"detail": "User not found"}, status=404)
 

@@ -1,11 +1,9 @@
 from http.client import HTTPException
-
-from django.shortcuts import get_object_or_404
 from ninja import Router
 
 from auth_custom.schemas import TokenSchema, LoginSchema, RefreshTokenSchema
 from auth_custom.sercvices.jwt_service import get_jwt_service, JWTAuth
-from users.models import User
+from users.repository import UserRepo
 
 auth_router = Router(tags=['Auth'])
 
@@ -14,7 +12,7 @@ jwt_service = get_jwt_service()
 
 @auth_router.post("/token", response=TokenSchema)
 async def login(request, data: LoginSchema):
-    user = await User.objects.filter(user_name=data.username, password=data.password).afirst()
+    user = await UserRepo.get_user_by_filters(user_name=data.username, password=data.password)
     if user is None:
         return {"detail": "Неверные учетные данные"}
     data_for_token = {

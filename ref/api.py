@@ -2,7 +2,7 @@ from ninja import Router
 
 from auth_custom.sercvices.jwt_service import JWTAuth
 from ref.ref_service import ReferralService
-from users.models import User
+from users.repository import UserRepo
 
 referral_router = Router(tags=["Referral"])
 
@@ -10,16 +10,14 @@ referral_router = Router(tags=["Referral"])
 @referral_router.post("/create/", auth=JWTAuth())
 async def create_referral_code(request, duration_days: int):
     """Создать реферальный код (нужна аутентификация)"""
-    user = await User.objects.filter(id=request.auth['user_id']).afirst()
-
-    # user = await User.objects.aget(id=request.auth['user_id'])
+    user = await UserRepo.get_user_by_filters(id=request.auth['user_id'])
     return await ReferralService.create_referral_code(user, duration_days)
 
 
 @referral_router.delete("/delete/", auth=JWTAuth())
 async def delete_referral_code(request):
     """Удалить реферальный код"""
-    user = await User.objects.aget(id=request.auth['user_id'])
+    user = await UserRepo.get_user_by_filters(id=request.auth['user_id'])
     return await ReferralService.delete_referral_code(user)
 
 

@@ -8,7 +8,7 @@ from django.http import JsonResponse
 from dotenv import load_dotenv
 from ninja.security import HttpBearer
 
-from users.models import User
+from users.repository import UserRepo
 
 load_dotenv()
 
@@ -51,7 +51,8 @@ class JWTService:
 
     async def add_tokens_to_user(self, token, user_name, refresh_token=None):
         """Асинхронно сохраняет токен в базу данных."""
-        user = await User.objects.filter(user_name=user_name).afirst()
+        user = await UserRepo.get_user_by_filters(user_name=user_name)
+
         user.token = token
         if refresh_token:
             user.refresh_token = refresh_token

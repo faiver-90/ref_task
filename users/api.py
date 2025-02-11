@@ -1,7 +1,8 @@
+from asgiref.sync import sync_to_async
 from ninja import Router
 
 from auth_custom.sercvices.jwt_service import JWTAuth
-from users.models import User
+from users.repository import UserRepo
 from users.schemas import UserSchema, PartialUserSchema
 from users.user_service import UserService
 
@@ -40,6 +41,6 @@ async def delete_user(request, user_id):
 
 
 @user_router.get("/get_users",)
-def get_users(request):
-    users = User.objects.all().values("id", "user_name", "role", "email")
+async def get_users(request):
+    users = await sync_to_async(list)(await UserRepo.get_all_users())
     return {"users": list(users)}
