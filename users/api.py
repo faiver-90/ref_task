@@ -30,19 +30,19 @@ async def create_user(request, data: UserSchema):
         return {"error": "Internal Server Error", "detail": str(e)}
 
 
-@user_router.put("/update_user/{user_name}", auth=JWTAuth(), summary="Обновить данные пользователя")
-async def update_user(request, user_name, data: PartialUserSchema):
+@user_router.put("/update_user/", auth=JWTAuth(), summary="Обновить данные пользователя")
+async def update_user(request, data: PartialUserSchema):
     """
     **Обновляет данные пользователя по `user_name`** (требуется аутентификация).
 
     **Входные данные:**
-    - `user_name` (str): Имя пользователя, данные которого обновляются.
     - `data` (PartialUserSchema): Поля, которые нужно обновить.
 
     **Ответ:**
     - `detail` (str): Сообщение об успешном обновлении или ошибка.
     """
     try:
+        user_name = request.auth['user_name']
         return await UserService.update_user_by_user_name(user_name, data)
     except ValueError as e:
         return {"error": str(e)}
