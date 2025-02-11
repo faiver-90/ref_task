@@ -11,7 +11,7 @@ user_router = Router(tags=['Users'])
 @user_router.post("/create_user")
 async def create_user(request, data: UserSchema):
     try:
-        return await UserService.create_user(data.user_name, data.password, data.role)
+        return await UserService.create_user(data.user_name, data.password, data.role, data.email)
     except ValueError as e:
         return {"error": str(e)}
     except Exception as e:
@@ -41,5 +41,5 @@ async def delete_user(request, user_id):
 
 @user_router.get("/get_users",)
 def get_users(request):
-    users = User.objects.all().values("id", "user_name", "role")
+    users = User.objects.all().values("id", "user_name", "role", "email")
     return {"users": list(users)}

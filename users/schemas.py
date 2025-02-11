@@ -5,6 +5,7 @@ class UserSchema(BaseModel):
     user_name: str
     password: str
     role: str
+    email: str
 
 
 class PartialUserSchema(BaseModel):

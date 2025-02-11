@@ -7,11 +7,11 @@ from users.models import User
 
 class UserService:
     @staticmethod
-    async def create_user(user_name, password, role):
+    async def create_user(user_name, password, role, email):
         user = await User.objects.filter(user_name=user_name).afirst()
         if user:
             raise ValueError("User already exist")
-        await User.objects.acreate(user_name=user_name, password=password, role=role)
+        await User.objects.acreate(user_name=user_name, password=password, role=role, email=email)
 
         return {'detail': "User created"}
 
