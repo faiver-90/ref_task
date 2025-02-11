@@ -124,6 +124,14 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+# Если вы используете DEBUG=True, укажите пути к статическим файлам
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static"),
+]
+
+# Папка, куда Django собирает статические файлы при collectstatic
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
