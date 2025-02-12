@@ -66,13 +66,6 @@ python manage.py createsuperuser
 python manage.py runserver
 
 ## 3. Тестирование API
-
-### 3.1 Запуск тестов
-```bash
-pytest
-```
-
-### 3.2 Тестирование API в Swagger UI
 Перейдите в браузере по адресу:
 ```
 http://127.0.0.1:9000/docs
