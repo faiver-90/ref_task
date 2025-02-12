@@ -1,4 +1,5 @@
 from asgiref.sync import sync_to_async
+from django.db import IntegrityError
 from ninja import Router
 from auth_custom.sercvices.jwt_service import JWTAuth
 from users.repository import UserRepo
@@ -24,6 +25,9 @@ async def create_user(request, data: UserSchema):
     """
     try:
         return await UserService.create_user(data.user_name, data.password, data.role, data.email)
+    except IntegrityError as e:
+        if "users_user_email_key" in str(e):
+            return {"error": "Email уже существует"}
     except ValueError as e:
         return {"error": str(e)}
     except Exception as e:
