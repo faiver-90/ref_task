@@ -7,11 +7,16 @@ from users.repository import UserRepo
 class UserService:
     @staticmethod
     async def create_user(user_name, password, role, email):
-        user = await UserRepo.get_user_by_filters(user_name=user_name)
-        if user:
-            raise ValueError("Пользователь уже существует")
+        existing_user = await UserRepo.get_user_by_filters(user_name=user_name)
+        if existing_user:
+            raise ValueError("Пользователь с таким именем уже существует")
+
+        existing_email = await UserRepo.get_user_by_filters(email=email)
+        if existing_email:
+            raise ValueError("Пользователь с таким email уже существует")
+
         await UserRepo.create_user(user_name=user_name, password=password, role=role, email=email)
-        return {'detail': "User created"}
+        return {'detail': "Пользователь создан"}
 
     @staticmethod
     async def update_user_by_user_name(user_name, data):
@@ -30,7 +35,7 @@ class UserService:
         user = await UserRepo.get_user_by_filters(user_name=user_name)
 
         if not user:
-            return {"detail": "Пользователь не найден"}, 404
+            return {"detail": "Пользователь не найден"}
         return model_to_dict(user)
 
     @staticmethod

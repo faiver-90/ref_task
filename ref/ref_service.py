@@ -49,11 +49,16 @@ class ReferralService:
 
     @staticmethod
     async def get_referrals_by_id(referrer_id: int):
-        """Получает всех пользователей, зарегистрированных по реферальному коду данного пользователя"""
+        """Получает всех пользователей, зарегистрированных по реферальному коду реферера"""
         ref_code = await RefRepo.get_referrer_code(user_id=referrer_id)
+
         if not ref_code:
-            return {"detail": "У пользователя нет реферального кода"}
-        referrals = await sync_to_async(list)(
-            await UserRepo.get_all_users(invite_ref_code=ref_code)
-        )
+            return {"error": "У пользователя нет реферального кода"}
+
+        referrals = await sync_to_async(list)(await UserRepo.get_all_users(invite_ref_code=ref_code))
+
+        if not referrals:
+            return {"error": "По этому коду никто не зарегистрировался"}
+
         return referrals
+

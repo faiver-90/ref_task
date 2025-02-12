@@ -26,10 +26,10 @@ async def create_referral_code(request, duration_days: int):
         user = await UserRepo.get_user_by_filters(id=request.auth['user_id'])
         return await ReferralService.create_referral_code(user, duration_days)
     except IntegrityError:
-        return {"error": "У пользователя уже есть активный реферальный код"}, 400
+        return {"error": "У пользователя уже есть активный реферальный код"}
     except Exception as e:
         logger.exception("Ошибка при создании реферального кода")
-        return {"error": "Внутренняя ошибка сервера"}, 500
+        return {"error": "Внутренняя ошибка сервера"}
 
 
 @referral_router.delete("/delete/", summary="Удалить реферальный код")
@@ -45,7 +45,7 @@ async def delete_referral_code(request):
         return await ReferralService.delete_referral_code(user)
     except Exception as e:
         logger.exception("Ошибка при удалении реферального кода")
-        return {"error": "Внутренняя ошибка сервера"}, 500
+        return {"error": "Внутренняя ошибка сервера"}
 
 
 @referral_router.get("/get_by_email/", summary="Получить реферальный код по email")
@@ -63,7 +63,7 @@ async def get_referral_code_by_email(request, email: str):
         return await ReferralService.get_referral_code_by_email(email)
     except Exception as e:
         logger.exception("Ошибка при получении реферального кода по email")
-        return {"error": "Внутренняя ошибка сервера"}, 500
+        return {"error": "Внутренняя ошибка сервера"}
 
 
 @referral_router.post("/register/", summary="Регистрация с реферальным кодом")
@@ -83,10 +83,10 @@ async def register_with_referral_code(request, ref_code: str, user_name: str, pa
     try:
         return await ReferralService.register_with_referral_code(ref_code, user_name, password)
     except IntegrityError:
-        return {"error": "Пользователь с таким именем уже существует"}, 400
+        return {"error": "Пользователь с таким именем уже существует"}
     except Exception as e:
         logger.exception("Ошибка при регистрации с реферальным кодом")
-        return {"error": "Внутренняя ошибка сервера"}, 500
+        return {"error": "Внутренняя ошибка сервера"}
 
 
 @referral_router.get("/get_referrals_by_id/{referrer_id}", summary="Получить список рефералов")
@@ -108,5 +108,4 @@ async def get_referrals_by_id(request, referrer_id: int):
     try:
         return await ReferralService.get_referrals_by_id(referrer_id)
     except Exception as e:
-        logger.exception("Ошибка при получении списка рефералов")
-        return {"error": "Внутренняя ошибка сервера"}, 500
+        return {"error": f"Ошибка: {str(e)}"}

@@ -39,6 +39,9 @@ class RefRepo:
     async def get_referrer_code(**kwargs):
         """Получает реферальный код реферера"""
         try:
-            return await RefCode.objects.filter(**kwargs).values_list("ref_code", flat=True).afirst()
+            ref_code = await RefCode.objects.filter(**kwargs).values_list("ref_code", flat=True).afirst()
+            if not ref_code:
+                return None
+            return ref_code
         except Exception as e:
             return {"error": f"Ошибка при получении кода реферера: {str(e)}"}

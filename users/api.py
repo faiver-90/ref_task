@@ -113,7 +113,9 @@ async def get_users(request):
     ```
     """
     try:
-        users = await sync_to_async(list)(await UserRepo.get_all_users())
-        return {"users": list(users)}
+        users = await UserRepo.get_all_users()
+        if isinstance(users, dict) and "error" in users:
+            return users  # Если в UserRepo произошла ошибка, возвращаем её
+        return {"users": users}
     except Exception as e:
         return {"error": "Внутренняя ошибка сервера", "detail": str(e)}
