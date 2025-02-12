@@ -3,6 +3,7 @@ from django.db import IntegrityError
 from ninja import Router
 from auth_custom.sercvices.jwt_service import JWTAuth
 from ref.ref_service import ReferralService
+from ref.schemas import RegisterByRef
 from users.repository import UserRepo
 
 logger = logging.getLogger(__name__)
@@ -67,7 +68,7 @@ async def get_referral_code_by_email(request, email: str):
 
 
 @referral_router.post("/register/", summary="Регистрация с реферальным кодом")
-async def register_with_referral_code(request, ref_code: str, user_name: str, password: str):
+async def register_with_referral_code(request, data: RegisterByRef):
     """
     Регистрация нового пользователя по реферальному коду.
 
@@ -81,12 +82,14 @@ async def register_with_referral_code(request, ref_code: str, user_name: str, pa
     - `user_id` (int): ID созданного пользователя.
     """
     try:
-        return await ReferralService.register_with_referral_code(ref_code, user_name, password)
+        return await ReferralService.register_with_referral_code(data.ref_code,
+                                                                 data.user_name,
+                                                                 data.password,
+                                                                 data.email)
     except IntegrityError:
         return {"error": "Пользователь с таким именем уже существует"}
     except Exception as e:
-        logger.exception("Ошибка при регистрации с реферальным кодом")
-        return {"error": "Внутренняя ошибка сервера"}
+        return {"error": "Внутренняя ошибка сервера", "detail": str(e)}
 
 
 @referral_router.get("/get_referrals_by_id/{referrer_id}", summary="Получить список рефералов")

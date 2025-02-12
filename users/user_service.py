@@ -7,15 +7,9 @@ from users.repository import UserRepo
 class UserService:
     @staticmethod
     async def create_user(user_name, password, role, email):
-        existing_user = await UserRepo.get_user_by_filters(user_name=user_name)
-        if existing_user:
-            raise ValueError("Пользователь с таким именем уже существует")
-
-        existing_email = await UserRepo.get_user_by_filters(email=email)
-        if existing_email:
-            raise ValueError("Пользователь с таким email уже существует")
-
-        await UserRepo.create_user(user_name=user_name, password=password, role=role, email=email)
+        user = await UserRepo.create_user(user_name=user_name, password=password, role=role, email=email)
+        if isinstance(user, dict) and "error" in user:
+            return user  # Возвращаем ошибку, если создание не удалось
         return {'detail': "Пользователь создан"}
 
     @staticmethod

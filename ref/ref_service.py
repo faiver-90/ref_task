@@ -39,12 +39,17 @@ class ReferralService:
         return {"ref_code": str(ref_code.ref_code)}
 
     @staticmethod
-    async def register_with_referral_code(ref_code: str, user_name: str, password: str):
+    async def register_with_referral_code(ref_code: str, user_name: str, password: str, email: str):
         """Регистрирует нового пользователя по реферальному коду"""
         referrer = await RefRepo.get_referrer_by_filter(ref_code=ref_code)
         if not referrer or referrer.is_expired():
             return {"detail": "Реферальный код недействителен или просрочен"}
-        user = await UserRepo.create_user(user_name=user_name, password=password, invite_ref_code=ref_code)
+
+        user = await UserRepo.create_user(user_name=user_name, password=password, invite_ref_code=ref_code, email=email)
+
+        if isinstance(user, dict) and "error" in user:
+            return user
+
         return {"detail": "Пользователь успешно зарегистрирован", "user_id": user.id}
 
     @staticmethod

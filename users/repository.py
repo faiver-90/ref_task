@@ -1,4 +1,4 @@
-from django.db import DatabaseError
+from django.db import DatabaseError, IntegrityError
 from django.forms import model_to_dict
 from users.models import User
 from asgiref.sync import sync_to_async
@@ -32,8 +32,18 @@ class UserRepo:
 
     @staticmethod
     async def create_user(**kwargs):
-        """Создает нового пользователя"""
+        """Создает нового пользователя с проверкой уникальности email и user_name"""
         try:
+            existing_user = await User.objects.filter(user_name=kwargs.get("user_name")).afirst()
+            if existing_user:
+                return {"error": "Пользователь с таким именем уже существует"}
+
+            existing_email = await User.objects.filter(email=kwargs.get("email")).afirst()
+            if existing_email:
+                return {"error": "Пользователь с таким email уже существует"}
+
             return await User.objects.acreate(**kwargs)
+        except IntegrityError:
+            return {"error": "Ошибка уникальности. Возможно, пользователь уже существует"}
         except Exception as e:
             return {"error": f"Ошибка при создании пользователя: {str(e)}"}
