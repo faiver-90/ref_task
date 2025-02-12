@@ -64,7 +64,7 @@ python manage.py createsuperuser
 ### 2.5 Запуск сервера
 ```bash
 python manage.py runserver
-
+```
 ## 3. Тестирование API
 Перейдите в браузере по адресу:
 ```
