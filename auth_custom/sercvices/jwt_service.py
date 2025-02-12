@@ -29,13 +29,13 @@ class JWTService:
         return jwt.encode(to_encode, self.secret_key, algorithm=self.algorithm)
 
     def decode_access_token(self, token: str) -> dict:
-        # try:
-        payload = jwt.decode(token, self.secret_key, algorithms=[self.algorithm])
-        return payload
-        # except jwt.ExpiredSignatureError as e:
-        #     raise HTTPException(e)
-        # except jwt.InvalidTokenError as e:
-        #     raise HTTPException(e)
+        try:
+            payload = jwt.decode(token, self.secret_key, algorithms=[self.algorithm])
+            return payload
+        except jwt.ExpiredSignatureError as e:
+            raise HTTPException(e)
+        except jwt.InvalidTokenError as e:
+            raise HTTPException(e)
 
     async def refresh_access_token(self, token) -> dict:
         payload = self.decode_access_token(token)

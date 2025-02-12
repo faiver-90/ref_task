@@ -1,7 +1,7 @@
 from http.client import HTTPException
 from ninja import Router
 
-from auth_custom.schemas import TokenSchema, LoginSchema, RefreshTokenSchema
+from auth_custom.schemas import LoginSchema, RefreshTokenSchema
 from auth_custom.sercvices.jwt_service import get_jwt_service, JWTAuth
 from users.repository import UserRepo
 
@@ -10,7 +10,7 @@ auth_router = Router(tags=['Auth'])
 jwt_service = get_jwt_service()
 
 
-@auth_router.post("/token", response=TokenSchema, summary="Получить JWT токен")
+@auth_router.post("/token", summary="Получить JWT токен")
 async def login(request, data: LoginSchema):
     """
     **Аутентификация пользователя и получение JWT токенов (access + refresh).**
@@ -26,7 +26,7 @@ async def login(request, data: LoginSchema):
     try:
         user = await UserRepo.get_user_by_filters(user_name=data.username, password=data.password)
         if user is None:
-            return {"detail": "Неверные учетные данные"}
+            raise HTTPException('Неверные учетные данные')
 
         data_for_token = {
             "user_id": user.id,
@@ -47,7 +47,7 @@ async def login(request, data: LoginSchema):
         return {"error": "Internal Server Error", "detail": str(e)}
 
 
-@auth_router.post("/token/refresh", response=TokenSchema, summary="Обновить access токен")
+@auth_router.post("/token/refresh", summary="Обновить access токен")
 async def refresh_token(request, data: RefreshTokenSchema):
     """
     **Обновление access-токена с использованием refresh-токена.**
