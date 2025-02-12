@@ -31,7 +31,7 @@ async def create_user(request, data: UserSchema):
     except ValueError as e:
         return {"error": str(e)}
     except Exception as e:
-        return {"error": "Internal Server Error", "detail": str(e)}
+        return {"error": "Внутренняя ошибка сервера", "detail": str(e)}
 
 
 @user_router.put("/update_user/", auth=JWTAuth(), summary="Обновить данные пользователя")
@@ -51,7 +51,7 @@ async def update_user(request, data: PartialUserSchema):
     except ValueError as e:
         return {"error": str(e)}
     except Exception as e:
-        return {"error": "Internal Server Error", "detail": str(e)}
+        return {"error": "Внутренняя ошибка сервера", "detail": str(e)}
 
 
 @user_router.get("/get_user_by_token", auth=JWTAuth(), summary="Получить данные текущего пользователя")
@@ -68,7 +68,7 @@ async def get_user_by_user_name(request):
     try:
         return await UserService.get_user_by_user_name(request.auth['user_name'])
     except Exception as e:
-        return {"error": "Internal Server Error", "detail": str(e)}
+        return {"error": "Внутренняя ошибка сервера", "detail": str(e)}
 
 
 @user_router.delete("/delete_user/{user_id}", auth=JWTAuth(), summary="Удалить пользователя")
@@ -86,7 +86,7 @@ async def delete_user(request, user_id: int):
         user_id_req = request.auth['user_id']
         return await UserService.delete_user(user_id, user_id_req)
     except Exception as e:
-        return {"error": "Internal Server Error", "detail": str(e)}
+        return {"error": "Внутренняя ошибка сервера", "detail": str(e)}
 
 
 @user_router.get("/get_users", summary="Получить список всех пользователей")
@@ -116,4 +116,4 @@ async def get_users(request):
         users = await sync_to_async(list)(await UserRepo.get_all_users())
         return {"users": list(users)}
     except Exception as e:
-        return {"error": "Internal Server Error", "detail": str(e)}
+        return {"error": "Внутренняя ошибка сервера", "detail": str(e)}

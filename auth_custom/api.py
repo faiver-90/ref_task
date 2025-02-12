@@ -41,10 +41,9 @@ async def login(request, data: LoginSchema):
             {**data_for_token, "type": "refresh"}, expires_in=86400
         )
         await jwt_service.add_tokens_to_user(access_token, data.username, refresh_token)
-
         return {"access_token": access_token, "refresh_token": refresh_token}
     except Exception as e:
-        return {"error": "Internal Server Error", "detail": str(e)}
+        return {"error": "Внутренняя ошибка сервера", "detail": str(e)}
 
 
 @auth_router.post("/token/refresh", summary="Обновить access токен")
@@ -68,7 +67,7 @@ async def refresh_token(request, data: RefreshTokenSchema):
     except HTTPException as e:
         return {"detail": str(e)}
     except Exception as e:
-        return {"error": "Internal Server Error", "detail": str(e)}
+        return {"error": "Внутренняя ошибка сервера", "detail": str(e)}
 
 
 @auth_router.get("/validate", auth=JWTAuth(), summary="Проверить валидность токена")
@@ -86,4 +85,4 @@ async def validate_token(request):
     except HTTPException as e:
         return {"valid": False, "detail": str(e)}
     except Exception as e:
-        return {"error": "Internal Server Error", "detail": str(e)}
+        return {"error": "Внутренняя ошибка сервера", "detail": str(e)}

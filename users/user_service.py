@@ -9,7 +9,7 @@ class UserService:
     async def create_user(user_name, password, role, email):
         user = await UserRepo.get_user_by_filters(user_name=user_name)
         if user:
-            raise ValueError("User already exist")
+            raise ValueError("Пользователь уже существует")
         await UserRepo.create_user(user_name=user_name, password=password, role=role, email=email)
         return {'detail': "User created"}
 
@@ -18,19 +18,19 @@ class UserService:
         user = await UserRepo.get_user_by_filters(user_name=user_name)
 
         if not user:
-            return {"detail": "User not found"}
+            return {"detail": "Пользователь не найден"}
 
         for field, value in data.dict(exclude_unset=True).items():
             setattr(user, field, value)
         await user.asave()
-        return {'detail': "User updated"}
+        return {'detail': "Пользовательские данные обновлены"}
 
     @staticmethod
     async def get_user_by_user_name(user_name: str):
         user = await UserRepo.get_user_by_filters(user_name=user_name)
 
         if not user:
-            return {"detail": "User not found"}, 404
+            return {"detail": "Пользователь не найден"}, 404
         return model_to_dict(user)
 
     @staticmethod
@@ -38,10 +38,10 @@ class UserService:
         user = await UserRepo.get_user_by_filters(id=user_id)
 
         if not user:
-            return JsonResponse({"detail": "User not found"}, status=404)
+            return JsonResponse({"detail": "Пользователь не найден"}, status=404)
 
         if user.id != user_id_req:
-            return JsonResponse({"detail": "Permission denied"}, status=403)
+            return JsonResponse({"detail": "Доступ запрещен"}, status=403)
 
         await user.adelete()
-        return {'detail': "User deleted"}
+        return {'detail': "Пользователь удален"}
